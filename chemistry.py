@@ -7,8 +7,8 @@ import numpy as np
 from rdkit.Chem import AllChem
 from rdkit.Chem import rdMolDescriptors as rdmd
 from rdkit import Chem
-from rdkit.Chem import Draw
 from rdkit import DataStructs
+from rdkit.Chem import Draw
 
 import pandas as pd
 from rdkit import Chem
@@ -24,19 +24,91 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-SUBSTRUCTURE_FP_SIZE = 2048
 
-EXAMPLE_COMPOUNDS = [
-    # smiles, substructure fingerprint
-    "CCC(Cl)C(N)C1=CC=CC=C1",
-    "CCC(Cl)C(F)C1=CC=CC=C1",
-    "CCC(Cl)C(F)C1CCCCC1",
-    "CCC(Cl)C(N)C1CCCCC1",
-    "CCC(F)C(Cl)CC",
-    "CCC(F)C(N)CC",
-    "CCC(Cl)C(N)C1CCC2CCCCC2C1",
-]
+def compare_to_Smiles(query_smiles, top_n):
+    """ """
 
+    dataset = pd.read_csv("dataset.csv")
+
+    from rdkit.Chem import PandasTools
+
+    PandasTools.AddMoleculeColumnToFrame(dataset, "SMILES", "Structure")
+
+    # Let us find compounds similar Aspirin
+    query = AllChem.MolFromSmiles("O=C(C)Oc1ccccc1C(=O)O")
+    query_fps = AllChem.GetMorganFingerprintAsBitVect(query, 2, nBits=4096)
+
+    # Calculate the fingerprints of all the compounds(total 2904)
+    all_Mfpts = [
+        AllChem.GetMorganFingerprintAsBitVect(mol, 2, nBits=4096)
+        for mol in dataset.Structure
+    ]
+
+    # calculate Tanimoto coefficient of the query compound against each of the compounds in the dataset
+    # put them in the list
+    Tanimoto_similarity = [
+        DataStructs.FingerprintSimilarity(
+            query_fps, x, metric=DataStructs.TanimotoSimilarity
+        )
+        for x in all_Mfpts
+    ]
+
+    # put the Tanimoto coefficient values into data frame.
+    dataset["tanimoto_values"] = Tanimoto_similarity
+
+    # sort Tanimoto coefficient values in decreasing order
+    # dataset_sorted = dataset.sort_values(['tanimoto_values'],ascending=False)
+
+    top_n = 10  # Set the number of top rows you want
+    dataset_sorted = dataset.sort_values(["tanimoto_values"], ascending=False).head(
+        top_n
+    )
+
+    # Function to compute molecular descriptors from SMILES
+    def compute_descriptors(smiles):
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None:
+            return None
+        descriptors = {}
+        for name, func in Descriptors.descList:
+            descriptors[name] = func(mol)
+        return descriptors
+
+    # Apply descriptor computation to your dataset
+    dataset_sorted["descriptors"] = dataset_sorted["SMILES"].apply(compute_descriptors)
+
+    # Convert the descriptors into a feature matrix (excluding rows with None)
+    feature_matrix = []
+    for descriptors in dataset_sorted["descriptors"]:
+        if descriptors is not None:
+            feature_matrix.append(list(descriptors.values()))
+        else:
+            feature_matrix.append([None] * len(Descriptors.descList))
+
+    # Create a DataFrame for the features
+    features_df = pd.DataFrame(
+        feature_matrix, columns=[desc[0] for desc in Descriptors.descList]
+    )
+
+    # Standardize the features
+    scaler = StandardScaler()
+    features_scaled = scaler.fit_transform(features_df.fillna(0))
+
+    # Load a toxicity prediction pipeline
+    model = pd.read_csv("prediction.csv")
+
+    # Merge the two datasets on the 'SMILES' column
+    output_df = pd.merge(
+        dataset_sorted, model[["SMILES", "Toxicity"]], on="SMILES", how="left"
+    )
+
+    # Convert the output dataframe to a dictionary
+    toxicity_dict = output_df.set_index("SMILES")["Toxicity"].to_dict()
+
+    # Display the dictionary
+    # print(toxicity_dict)
+
+    return toxicity_dict
 
 def smiles_to_svg(smiles: str, width: int = 400, height: int = 400) -> bytes:
     """
@@ -52,64 +124,3 @@ def smiles_to_svg(smiles: str, width: int = 400, height: int = 400) -> bytes:
     drawer.DrawMolecule(mol)
     drawer.FinishDrawing()
     return drawer.GetDrawingText().encode()
-
-
-def get_substructure_fingerprint(mol):
-    """
-    TODO: substructure fingerprints
-    returns substructure fingerprint for mol
-    """
-    fp = ExplicitBitVect(SUBSTRUCTURE_FP_SIZE, True)
-    return fp  # this is currently empty and useless
-
-
-def get_highlighted_image(
-    target_smiles: str, query_smiles: str, width: int = 400, height: int = 400
-):
-    """
-    TODO: Creates image of highlighted molecule
-    """
-    target_mol = Chem.MolFromSmiles(target_smiles)
-    query_mol = Chem.MolFromSmiles(query_smiles)
-    match = target_mol.GetSubstructMatch(query_mol)
-
-    Chem.rdCoordGen.AddCoords(target_mol)
-    Chem.rdCoordGen.AddCoords(query_mol)
-
-    drawer = Chem.Draw.rdMolDraw2D.MolDraw2DSVG(width, height)
-    drawer.DrawMolecule(target_mol, highlightAtoms=match)
-    drawer.FinishDrawing()
-    return drawer.GetDrawingText().encode()
-
-
-def search_compounds(
-    query_smiles: str, compound_list: list[str] = EXAMPLE_COMPOUNDS
-) -> list[list[int]]:
-    """
-    search the list of smiles and return substructure match indices
-
-    is empty list if not match and that index
-
-    it would be nice to fingerprint and store fingerprints in memory
-    """
-    query_mol = Chem.MolFromSmiles(query_smiles)
-    if query_mol is None:
-        raise RuntimeError("Invalid query SMILES")
-
-    compounds = [Chem.MolFromSmiles(s) for s in compound_list]
-    matches = []
-    for m in compounds:
-        if m is None:
-            matches.append([])
-        else:
-            matches.append(m.GetSubstructMatch(query_mol))
-    return matches
-
-
-# print(search_compounds("C"))
-# print(search_compounds("C1CCCCC1"))
-
-# import rdkit
-# print(rdkit.__version__)
-
-# print(smiles_to_svg("CC"))
