@@ -8,7 +8,7 @@ app = Flask(__name__)
 def root():
     return render_template("base.html")
 
-@app.route('/toxicity')
+@app.route('/toxicity/')
 def toxicity():
     smiles_query = request.args.get("smiles_query")
     num_compounds = request.args.get("num_compounds")
