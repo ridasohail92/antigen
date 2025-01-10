@@ -1,46 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <link rel="stylesheet" href='{{ url_for("static", filename="home.css") }}' />
+    <div class="calc-container">
+    <h1>Toxicity Calculator</h1>
     <div class="center">
         <form action='{{ url_for("toxicity_results") }}' method="GET">
+            <span>Molecule Name</span>
             <input name="smiles_query" type="text" />
-            <select name="num_compounds" id=""></select>
+            <span># Molecules</span>
+            <input name="num_compounds" type="number">
             <button type="submit">Submit</button>
         </form>
 
-        <div class="bg-primary-subtle mt-5">
-            <nav class="navbar bg-body-tertiary">
-                <form class="container-fluid">
-                    <div class="input-group">
-                        <span class="input-group-text" id="basic-addon1">@</span>
-                        <input type="text"
-                               class="form-control"
-                               placeholder="Chemical Molecule"
-                               aria-label="Chemical Molecule"
-                               aria-describedby="basic-addon1">
-                    </div>
-                </form>
-            </nav>
+        <img src="https://img.freepik.com/premium-photo/beautiful-scene-chemical-molecules-air-style-orange-blue_921860-32502.jpg">
 
-
-        </div>
-
-        <div class="dropdown-center">
-            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Centered dropdown
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Action two</a></li>
-              <li><a class="dropdown-item" href="#">Action three</a></li>
-            </ul>
-          </div>
-
-         
     </div>
+    </div> 
 {% endblock content %}
 
-{% block styles %}
+<!--{% block styles %}
     <style>
     body {
       background-image: url('https://pngtree.com/freebackground/gradient-blue-minimal-chemical-element-molecular-structure_1158484.html');
@@ -48,5 +27,5 @@
       background-attachment: fixed;
       background-size: cover;
     }
-    </style>
-{% endblock styles %}
+</style>>
+{% endblock styles %}-->
