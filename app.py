@@ -23,7 +23,10 @@ def get_new_smile():
     smiles_query = request.args.get("smiles_query")
     num_compounds = request.args.get("num_compounds")
     similar_smiles = compare_to_Smiles(smiles_query,num_compounds)
-    return render_template('find.html', array_of_smiles=similar_smiles)
+
+    sorted_smiles  = {}
+    sorted_smiles = {k: v for k, v in sorted(similar_smiles.items(), key=lambda item: item[1])}
+    return render_template('find.html', smilesDict=sorted_smiles)
     
 
 if __name__ == "__main__":
