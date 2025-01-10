@@ -1,7 +1,5 @@
-import pandas as pd
-from flask import Flask, render_template, request, redirect
-from chemistry import compare_to_Smiles
-
+from flask import Flask, render_template, request, Response
+from chemistry import smiles_to_svg
 
 app = Flask(__name__)
 
@@ -10,16 +8,25 @@ app = Flask(__name__)
 def base_site(): 
     return render_template("base.html") 
 
-@app.route("/newsmile", methods = ["POST"], endpoint = "toxicity _results")
-def get_new_smile():
+@app.route('/toxicity/')
+def toxicity():
     smiles_query = request.args.get("smiles_query")
     num_compounds = request.args.get("num_compounds")
-    similar_smiles = compare_to_Smiles(smiles_query,num_compounds)
+    similar_smiles = {
+         "CCC(Cl)C(N)C1=CC=CC=C1" : 2.8,
+    "CCC(Cl)C(F)C1=CC=CC=C1" : 3.2,
+    "CCC(Cl)C(F)C1CCCCC1" : 3.4 ,
+    "CCC(Cl)C(N)C1CCCCC1" : 2.6,
+    "CCC(F)C(Cl)CC" : 2.8,
+    "CCC(F)C(N)CC" : 2.9,
+    "CCC(Cl)C(N)C1CCC2CCCCC2C1" : 3.8,
+    }
 
     sorted_smiles  = {}
     sorted_smiles = {k: v for k, v in sorted(similar_smiles.items(), key=lambda item: item[1])}
-    return render_template('find.html', smilesDict=sorted_smiles)
-    
+    return render_template('toxicity.html', smilesDict=sorted_smiles)
 
-if __name__ == "__main__":
-    app.run(debug=True) 
+@app.route("/compound-image", methods=["GET"], endpoint="get_compound_image")
+def get_compound_image():
+    smiles = request.args.get("smiles", "")
+    return Response(smiles_to_svg(smiles), mimetype="image/svg+xml")
