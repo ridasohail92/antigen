@@ -11,7 +11,7 @@ def root():
 @app.route('/toxicity/', endpoint="toxicity_results")
 def toxicity():
     smiles_query = request.args.get("smiles_query")
-    num_compounds = request.args.get("num_compounds")
+    num_compounds = int(request.args.get("num_compounds"))
     # similar_smiles = {
     #      "CCC(Cl)C(N)C1=CC=CC=C1" : 2.8,
     # "CCC(Cl)C(F)C1=CC=CC=C1" : 3.2,
@@ -23,6 +23,8 @@ def toxicity():
     # }
     similar_smiles = compare_to_Smiles(smiles_query, num_compounds)
 
+    print(num_compounds)
+    print(similar_smiles)
     sorted_smiles  = {}
     sorted_smiles = {k: v for k, v in sorted(similar_smiles.items(), reverse=True, key=lambda item: item[1])}
     return render_template('toxicity.html', smilesDict=sorted_smiles)
