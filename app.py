@@ -1,38 +1,29 @@
 import pandas as pd
 from flask import Flask, render_template, request, redirect
-from chemistry.py
+#from chemistry.py import 
 #url_for('static', filename='style.css') if we use this file
 
 
 app = Flask(__name__)
 
 
-def UserSmiles(smiles_query,num_of_comparison):
-    return 
+def compare_to_Smiles(smiles_query,num_compounds):
+    return "dataframe"
 
-smilescomps = pd.read_csv("filewithsmiles")
-
-
-def compare_smiles(smilescomps):
-    print 
-    
+#smilescomps = pd.read_csv("filewithsmiles")
 
 
-@app.route("/", methods=["POST"])
-def usersmile():
-    
-    if request.method == 'POST':
-       return "Hello"
-       '''task_content = request.form['content']
-        return 'Finding Your Results...''''
-    else:
-        return render_template("base.html") 
 
-@app.route("/newsmile/<usersmile>", methods = ["GET"])
-def mysmile(usersmile):
-   return "This endroute works"
-   ''' query = request.args.get(compare_smiles(smilescomps))
-    return render_template('finishthis.html') '''
+@app.route("/", endpoint = "base")
+def base_site(): 
+    return render_template("base.html") 
+
+@app.route("/newsmile", methods = ["POST"], endpoint = "toxicity _results")
+def get_new_smile():
+    smiles_query = request.args.get("smiles_query")
+    num_compounds = request.args.get("num_compounds")
+    similar_smiles = compare_to_Smiles(smiles_query,num_compounds)
+    return render_template('find.html', array_of_smiles=similar_smiles)
     
 
 if __name__ == "__main__":
