@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="center">
-        <form action='{{ url_for("toxicity_results") }}' method="GET"></form>">
+        <form action='{{ url_for("toxicity_results") }}' method="GET">
             <input name="smiles_query" type="text" />
             <select name="num_compounds" id=""></select>
             <button type="submit">Submit</button>

@@ -4,11 +4,11 @@ from chemistry import smiles_to_svg
 app = Flask(__name__)
 
 
-@app.route("/", endpoint = "base")
-def base_site(): 
-    return render_template("base.html") 
+@app.route("/", methods=["GET"], endpoint="base")
+def root():
+    return render_template("home.html")
 
-@app.route('/toxicity/')
+@app.route('/toxicity/', endpoint="toxicity_results")
 def toxicity():
     smiles_query = request.args.get("smiles_query")
     num_compounds = request.args.get("num_compounds")
