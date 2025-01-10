@@ -1,17 +1,9 @@
 import pandas as pd
 from flask import Flask, render_template, request, redirect
-#from chemistry.py import 
-#url_for('static', filename='style.css') if we use this file
+from chemistry import compare_to_Smiles
 
 
 app = Flask(__name__)
-
-
-def compare_to_Smiles(smiles_query,num_compounds):
-    return "dataframe"
-
-#smilescomps = pd.read_csv("filewithsmiles")
-
 
 
 @app.route("/", endpoint = "base")
