@@ -35,7 +35,7 @@ def compare_to_Smiles(query_smiles, top_n):
     PandasTools.AddMoleculeColumnToFrame(dataset, "SMILES", "Structure")
 
     # Let us find compounds similar Aspirin
-    query = AllChem.MolFromSmiles("O=C(C)Oc1ccccc1C(=O)O")
+    query = AllChem.MolFromSmiles(query_smiles)
     query_fps = AllChem.GetMorganFingerprintAsBitVect(query, 2, nBits=4096)
 
     # Calculate the fingerprints of all the compounds(total 2904)
@@ -59,7 +59,7 @@ def compare_to_Smiles(query_smiles, top_n):
     # sort Tanimoto coefficient values in decreasing order
     # dataset_sorted = dataset.sort_values(['tanimoto_values'],ascending=False)
 
-    top_n = 10  # Set the number of top rows you want
+    # top_n = 10  # Set the number of top rows you want
     dataset_sorted = dataset.sort_values(["tanimoto_values"], ascending=False).head(
         top_n
     )
