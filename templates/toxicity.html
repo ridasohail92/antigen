@@ -1,9 +1,16 @@
 {% extends "base.html" %}
 
+{% macro compound_image(smiles) %}
+    <img src='{{ url_for("get_compound_image") }}?smiles={{ smiles|urlencode }}'
+         alt="{{ smiles }}"
+         class="compound-image w-100 overflow-hidden"
+         style="aspect-ratio: 1">
+{% endmacro %}
+
 {% block content %}
       <link rel="stylesheet" href='{{ url_for("static", filename="style.css") }}'/>
       <h1>Toxicity Calculator</h1>
-      <table class="table table-bordered border-primary">
+      <table class="table-toxicity table-bordered border-primary">
         <thead>
           <tr>
             <th scope="col">#</th>
@@ -12,11 +19,14 @@
           </tr>
         </thead>
         <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td></td>
-              <td></td>
-            </tr>
+        {% for key, value in smilesDict.items() %}
+          <tr>
+              <th scope="row">{{ loop.index }}</th>
+              <td>{{ compound_image(key) }}</td>
+              <td>{{ value }}</td>
+          </tr>
+        {% endfor %}
+    
             <!--Needs a Loop-->
         </tbody>
       </table>

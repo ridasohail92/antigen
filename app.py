@@ -1,6 +1,6 @@
-import pandas as pd
-from flask import Flask, render_template, request, redirect
-from chemistry.py
+# import pandas as pd
+from flask import Flask, render_template, request, Response
+from chemistry import smiles_to_svg
 #url_for('static', filename='style.css') if we use this file
 
 
@@ -13,35 +13,18 @@ def root():
 
 @app.route('/toxicity/')
 def toxicity():
-    return render_template('toxicity.html')
+    smilestoToxicity = {
+         "CCC(Cl)C(N)C1=CC=CC=C1" : 2.8,
+    "CCC(Cl)C(F)C1=CC=CC=C1" : 3.2,
+    "CCC(Cl)C(F)C1CCCCC1" : 3.4 ,
+    "CCC(Cl)C(N)C1CCCCC1" : 2.6,
+    "CCC(F)C(Cl)CC" : 2.8,
+    "CCC(F)C(N)CC" : 2.9,
+    "CCC(Cl)C(N)C1CCC2CCCCC2C1" : 3.8,
+    }
+    return render_template('toxicity.html', smilesDict=smilestoToxicity)
 
-def UserSmiles(smiles_query,num_of_comparison):
-    return 
-
-smilescomps = pd.read_csv("filewithsmiles")
-
-
-def compare_smiles(smilescomps):
-    print 
-    
-
-
-@app.route("/", methods=["POST"])
-def usersmile():
-    
-    if request.method == 'POST':
-       return "Hello"
-       '''task_content = request.form['content']
-        return 'Finding Your Results...''''
-    else:
-        return render_template("base.html") 
-
-@app.route("/newsmile/<usersmile>", methods = ["GET"])
-def mysmile(usersmile):
-   return "This endroute works"
-   ''' query = request.args.get(compare_smiles(smilescomps))
-    return render_template('finishthis.html') '''
-    
-
-if __name__ == "__main__":
-    app.run(debug=True) 
+@app.route("/compound-image", methods=["GET"], endpoint="get_compound_image")
+def get_compound_image():
+    smiles = request.args.get("smiles", "")
+    return Response(smiles_to_svg(smiles), mimetype="image/svg+xml")
