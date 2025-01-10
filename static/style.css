@@ -28,3 +28,18 @@ h1 {
   background-color: darkblue;
   color: white;
 }
+
+.btn-light {
+  color: #007bff;
+  font-size: 10px; 
+  text-decoration: none; /* Remove underline */
+  padding: 5px 10px; /* Optional: Adjust padding for better spacing */
+  border: 1px solid #007bff; /* Optional: Add a border */
+  border-radius: 5px; /* Optional: Round corners */
+}
+
+.btn-light:hover {
+  color: #0056b3; /* Hover text color */
+  background-color: #e9ecef; /* Optional: Add a hover background */
+}
+
