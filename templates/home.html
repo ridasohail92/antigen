@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 
+{% block scripts %}
+<script>
+    const smilesInput = document.querySelector('.smiles_input');
+    const molImage = document.querySelector('#molImage');
+
+    smilesInput.addEventListener('keydown', (event) => {
+        molImage.src = `/compound-image?smiles=${event.target.value}`;
+    });
+</script>
+{% endblock scripts %}
+
 {% block content %}
     <link rel="stylesheet" href='{{ url_for("static", filename="home.css") }}' />
     <div class="calc-container">
@@ -7,13 +18,13 @@
     <div class="center">
         <form action='{{ url_for("toxicity_results") }}' method="GET">
             <span>Molecule Name</span>
-            <input name="smiles_query" type="text" />
+            <input class="smiles_input" name="smiles_query" type="text" />
             <span># Molecules</span>
             <input name="num_compounds" type="number">
             <button type="submit">Submit</button>
         </form>
 
-        <img src="https://img.freepik.com/premium-photo/beautiful-scene-chemical-molecules-air-style-orange-blue_921860-32502.jpg">
+        <img id="molImage" src="https://img.freepik.com/premium-photo/beautiful-scene-chemical-molecules-air-style-orange-blue_921860-32502.jpg">
 
     </div>
     </div> 
