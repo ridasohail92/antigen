@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+      <link rel="stylesheet" href='{{ url_for("static", filename="style.css") }}'/>
+      <h1>Toxicity Calculator</h1>
+      <table class="table table-bordered border-primary">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Molecule</th>
+            <th scope="col">Toxicity Value</th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr>
+              <th scope="row">1</th>
+              <td></td>
+              <td></td>
+            </tr>
+            <!--Needs a Loop-->
+        </tbody>
+      </table>
+{% endblock content %}
