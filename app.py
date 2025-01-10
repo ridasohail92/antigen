@@ -6,9 +6,9 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def root():
-    return render_template("base.html")
+    return render_template("home.html")
 
-@app.route('/toxicity/')
+@app.route('/toxicity/', endpoint="toxicity_results")
 def toxicity():
     smiles_query = request.args.get("smiles_query")
     num_compounds = request.args.get("num_compounds")
