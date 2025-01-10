@@ -5,7 +5,7 @@
     <div class="calc-container">
     <h1>Toxicity Calculator</h1>
     <div class="center">
-        <form action=""method="GET">
+        <form action='{{ url_for("toxicity_results") }}' method="GET">
             <span>Molecule Name</span>
             <input name="smiles_query" type="text" />
             <span># Molecules</span>
