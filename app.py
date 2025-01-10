@@ -1,6 +1,6 @@
-import pandas as pd
+#import pandas as pd
 from flask import Flask, render_template, request, redirect
-from chemistry.py
+#from chemistry.py
 #url_for('static', filename='style.css') if we use this file
 
 
@@ -10,7 +10,7 @@ app = Flask(__name__)
 def UserSmiles(smiles_query,num_of_comparison):
     return 
 
-smilescomps = pd.read_csv("filewithsmiles")
+#smilescomps = pd.read_csv("filewithsmiles")
 
 
 def compare_smiles(smilescomps):
@@ -18,21 +18,13 @@ def compare_smiles(smilescomps):
     
 
 
-@app.route("/", methods=["POST"])
+@app.route("/", methods=["GET"])
 def usersmile():
-    
-    if request.method == 'POST':
-       return "Hello"
-       '''task_content = request.form['content']
-        return 'Finding Your Results...''''
-    else:
-        return render_template("base.html") 
+    return render_template("home.html") 
 
 @app.route("/newsmile/<usersmile>", methods = ["GET"])
 def mysmile(usersmile):
    return "This endroute works"
-   ''' query = request.args.get(compare_smiles(smilescomps))
-    return render_template('finishthis.html') '''
     
 
 if __name__ == "__main__":
